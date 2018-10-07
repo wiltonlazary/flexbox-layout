@@ -17,32 +17,40 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext {
+        minSdkVersion = 14
+        targetSdkVersion = 28
+        compileSdkVersion = 28
+
+        androidGradlePluginVersion = "3.2.0"
+        androidMavenGradlePluginVersion = "1.5"
+        androidxCoreVersion = "1.0.0"
+        androidxEspressoVersion = "3.1.0-alpha4"
+        androidxTestVersion = "1.1.0-alpha4"
+        junitVersion = "4.12"
+        gradleBintrayPluginVersion = "1.6"
+        kotlinVersion = "1.2.70"
+        materialVersion = "1.0.0"
+    }
+
     repositories {
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+        classpath "com.android.tools.build:gradle:$androidGradlePluginVersion"
+        classpath "com.github.dcendents:android-maven-gradle-plugin:$androidMavenGradlePluginVersion"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$gradleBintrayPluginVersion"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
-ext {
-    minSdkVersion = 9
-    targetSdkVersion = 25
-    compileSdkVersion = 25
-    buildToolsVersion = "25.0.2"
-    supportLibVersion = "25.3.0"
-    espressoVersion = "2.2.2"
-    testRunnerVersion = "0.5"
-    junitVersion = "4.12"
-}
-
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 }
 
@@ -57,9 +65,9 @@ project.ext.preDexLibs = !project.hasProperty('disablePreDex')
 
 subprojects {
     project.plugins.whenPluginAdded { plugin ->
-        if ("com.android.build.gradle.AppPlugin".equals(plugin.class.name)) {
+        if ("com.android.build.gradle.AppPlugin" == plugin.class.name) {
             project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
-        } else if ("com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
+        } else if ("com.android.build.gradle.LibraryPlugin" == plugin.class.name) {
             project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
         }
     }

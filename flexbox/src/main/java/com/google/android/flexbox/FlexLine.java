@@ -16,6 +16,8 @@
 
 package com.google.android.flexbox;
 
+import android.view.View;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,49 +31,44 @@ public class FlexLine {
     FlexLine() {
     }
 
-    /** @see {@link #getLeft()} */
     int mLeft = Integer.MAX_VALUE;
 
-    /** @see {@link #getTop()} */
     int mTop = Integer.MAX_VALUE;
 
-    /** @see {@link #getRight()} */
     int mRight = Integer.MIN_VALUE;
 
-    /** @see {@link #getBottom()} */
     int mBottom = Integer.MIN_VALUE;
 
-    /** @see {@link #getMainSize()} */
+    /** @see #getMainSize() */
     int mMainSize;
 
     /**
-     * The sum of the lengths of dividers along the main axis. This value should be lower or
-     * than than the value of {@link #mMainSize}.
+     * The sum of the lengths of dividers along the main axis. This value should be lower
+     * than the value of {@link #mMainSize}.
      */
     int mDividerLengthInMainSize;
 
-    /** @see {@link #getCrossSize()} */
+    /** @see #getCrossSize() */
     int mCrossSize;
 
-    /** @see {@link #getItemCount()} */
+    /** @see #getItemCount() */
     int mItemCount;
 
     /** Holds the count of the views whose visibilities are gone */
     int mGoneItemCount;
 
-    /** @see {@link #getTotalFlexGrow()} */
+    /** @see #getTotalFlexGrow() */
     float mTotalFlexGrow;
 
-    /** @see {@link #getTotalFlexShrink()} */
+    /** @see #getTotalFlexShrink() */
     float mTotalFlexShrink;
 
     /**
      * The largest value of the individual child's baseline (obtained by View#getBaseline()
-     * if the {@link FlexboxLayout#mAlignItems} value is not
-     * {@link FlexboxLayout#ALIGN_ITEMS_BASELINE}
+     * if the {@link FlexboxLayout#mAlignItems} value is not {@link AlignItems#BASELINE}
      * or the flex direction is vertical, this value is not used.
      * If the alignment direction is from the bottom to top,
-     * (e.g. flexWrap == FLEX_WRAP_WRAP_REVERSE and flexDirection == FLEX_DIRECTION_ROW)
+     * (e.g. flexWrap == WRAP_REVERSE and flexDirection == ROW)
      * store this value from the distance from the bottom of the view minus baseline.
      * (Calculated as view.getMeasuredHeight() - view.getBaseline - LayoutParams.bottomMargin)
      */
@@ -89,37 +86,9 @@ public class FlexLine {
      */
     List<Integer> mIndicesAlignSelfStretch = new ArrayList<>();
 
-    /**
-     * @return the distance in pixels from the top edge of this view's parent
-     * to the top edge of this FlexLine.
-     */
-    public int getLeft() {
-        return mLeft;
-    }
+    int mFirstIndex;
 
-    /**
-     * @return the distance in pixels from the top edge of this view's parent
-     * to the top edge of this FlexLine.
-     */
-    public int getTop() {
-        return mTop;
-    }
-
-    /**
-     * @return the distance in pixels from the right edge of this view's parent
-     * to the right edge of this FlexLine.
-     */
-    public int getRight() {
-        return mRight;
-    }
-
-    /**
-     * @return the distance in pixels from the bottom edge of this view's parent
-     * to the bottom edge of this FlexLine.
-     */
-    public int getBottom() {
-        return mBottom;
-    }
+    int mLastIndex;
 
     /**
      * @return the size of the flex line in pixels along the main axis of the flex container.
@@ -131,6 +100,7 @@ public class FlexLine {
     /**
      * @return the size of the flex line in pixels along the cross axis of the flex container.
      */
+    @SuppressWarnings("WeakerAccess")
     public int getCrossSize() {
         return mCrossSize;
     }
@@ -138,6 +108,7 @@ public class FlexLine {
     /**
      * @return the count of the views contained in this flex line.
      */
+    @SuppressWarnings("WeakerAccess")
     public int getItemCount() {
         return mItemCount;
     }
@@ -145,6 +116,7 @@ public class FlexLine {
     /**
      * @return the count of the views whose visibilities are not gone in this flex line.
      */
+    @SuppressWarnings("WeakerAccess")
     public int getItemCountNotGone() {
         return mItemCount - mGoneItemCount;
     }
@@ -152,6 +124,7 @@ public class FlexLine {
     /**
      * @return the sum of the flexGrow properties of the children included in this flex line
      */
+    @SuppressWarnings("WeakerAccess")
     public float getTotalFlexGrow() {
         return mTotalFlexGrow;
     }
@@ -159,7 +132,34 @@ public class FlexLine {
     /**
      * @return the sum of the flexShrink properties of the children included in this flex line
      */
+    @SuppressWarnings("WeakerAccess")
     public float getTotalFlexShrink() {
         return mTotalFlexShrink;
+    }
+
+    /**
+     * @return the first view's index included in this flex line.
+     */
+    public int getFirstIndex() {
+        return mFirstIndex;
+    }
+
+    /**
+     * Updates the position of the flex line from the contained view.
+     *
+     * @param view             the view contained in this flex line
+     * @param leftDecoration   the length of the decoration on the left of the view
+     * @param topDecoration    the length of the decoration on the top of the view
+     * @param rightDecoration  the length of the decoration on the right of the view
+     * @param bottomDecoration the length of the decoration on the bottom of the view
+     */
+    void updatePositionFromView(View view, int leftDecoration, int topDecoration,
+            int rightDecoration, int bottomDecoration) {
+        FlexItem flexItem = (FlexItem) view.getLayoutParams();
+        mLeft = Math.min(mLeft, view.getLeft() - flexItem.getMarginLeft() - leftDecoration);
+        mTop = Math.min(mTop, view.getTop() - flexItem.getMarginTop() - topDecoration);
+        mRight = Math.max(mRight, view.getRight() + flexItem.getMarginRight() + rightDecoration);
+        mBottom = Math
+                .max(mBottom, view.getBottom() + flexItem.getMarginBottom() + bottomDecoration);
     }
 }
